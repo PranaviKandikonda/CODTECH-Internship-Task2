@@ -1,0 +1,25 @@
+#bgSignup{
+    background-color: rgb(185, 230, 248);
+    height: 100vh;
+}
+
+#bgLogin{
+    background-color: rgb(127, 199, 127);
+    height: 100vh;
+}
+
+#bgNewProduct{
+    background-color: rgb(248, 209, 138);
+    height: 100vh;
+}
+
+.home {
+    display: flex;
+    background-image: url("./assets/HomePage.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+
+
