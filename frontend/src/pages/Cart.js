@@ -1,27 +1,54 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import CartProduct from "../components/CartProduct";
 import emptyCart from "../assets/emptyCart.gif";
 import { useNavigate } from "react-router-dom";
-import { clearCart } from "../redux/productSlice";
+import {loadStripe} from "@stripe/stripe-js";
 
 function Cart() {
     const productCartItem = useSelector((state) => state.product.cartItem);
     console.log(productCartItem);
 
+    const user = useSelector(state => state.user);
+    const navigate = useNavigate();
+
     const totalPrice = productCartItem.reduce((acc, curr) => acc + parseInt(curr.total), 0);
     const totalQty = productCartItem.reduce((acc, curr) => acc + parseInt(curr.qty), 0);
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const handlePayment = async() => {
+        if(user.email){
+            const stripePromise = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+            const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/create-checkout-session`, {
+                method: "POST",
+                headers: {
+                    "content-type" : "application/json"
+                  },
+                body: JSON.stringify(productCartItem)
+            })
+            if (res.ok) { // Check if the response was successful
+                const {id} = await res.json();
 
-    const handleShopNow = () => {
-        navigate("/");
+                //check if stripe is loaded
+                if(!stripePromise){
+                    console.error("Stripe has not been loaded");
+                }
+
+                const { error } = await stripePromise.redirectToCheckout({ sessionId: id });
+                if (error) {
+                    console.error('Stripe Checkout error:', error);
+                }
+            } else {
+                console.error('Error:', res.statusText);
+                alert('Failed to initiate checkout. Please try again.');
+            }
+        }
+        else {
+            alert("You are not logged in")
+            navigate("/login");
+        }
     }
 
-    const handlePayment = async() => {
-        alert("Thank you for shopping with us");
-        dispatch(clearCart());
+    const handleShopNow = () => {
         navigate("/");
     }
 
@@ -35,7 +62,7 @@ function Cart() {
                     { /*display the items added to cart*/}
                     <div className="w-full max-w-3xl">
                         {
-                            productCartItem.map(el => {
+                            productCartItem.map((el) => {
                                 return (
                                     <CartProduct
                                         key={el._id}

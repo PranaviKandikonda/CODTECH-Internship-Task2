@@ -11,10 +11,12 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import NewProduct from './pages/Newproduct';
 import Signup from './pages/Signup';
-import { store } from './redux';
+import {store} from "./redux/index"
 import {Provider} from 'react-redux';
 import MenuPage from './pages/MenuPage';
 import Cart from './pages/Cart';
+import Success from './pages/Success';
+import Cancel from './pages/Cancel';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,6 +30,8 @@ const router = createBrowserRouter(
       <Route path='newproduct' element={<NewProduct />} />
       <Route path='signup' element={<Signup />} />
       <Route path='cart' element={<Cart />} />
+      <Route path='success' element={<Success />} />
+      <Route path='cancel' element={<Cancel />} />
     </Route>
   )
 )
